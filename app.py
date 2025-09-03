@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 import httpx
+from enum import Enum
 
 app = FastAPI(title="Mini Integration API")
 
@@ -15,6 +16,11 @@ class QuoteReq(BaseModel):
     items: list[QuoteItem]
     markup: float = 0.10  # 10%
 
+class Units(str, Enum):
+    IMPERIAL = "imperial"
+    METRIC = "metric"
+    
+
 @app.post("/quote")
 def quote(q: QuoteReq):
     subtotal = sum(i.qty * i.price for i in q.items)
@@ -23,7 +29,7 @@ def quote(q: QuoteReq):
 
 # ---- External API demo ----
 @app.get("/conditions")
-async def conditions(lat: float = 42.36, lon: float = -71.06, units: str = "imperial"):
+async def conditions(lat: float = 42.36, lon: float = -71.06, units: Units =  Units.IMPERIAL):
     url = ("https://api.open-meteo.com/v1/forecast"
            f"?latitude={lat}&longitude={lon}"
            "&hourly=temperature_2m,relative_humidity_2m,precipitation_probability,wind_speed_10m"
