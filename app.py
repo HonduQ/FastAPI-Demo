@@ -14,7 +14,7 @@ class QuoteItem(BaseModel):
 class QuoteReq(BaseModel):
     external_id: str
     items: list[QuoteItem]
-    markup: float = 0.10  # 10%
+    markup: float = Field(defaut = 0.10, ge=0) # 10%, no negative values allowed
 
 class Units(str, Enum):
     IMPERIAL = "imperial"
